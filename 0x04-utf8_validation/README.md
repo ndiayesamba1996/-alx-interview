@@ -1,36 +1,40 @@
-# UTF-8 Validation function
+# 0x04. UTF-8 Validation
 
-A character in UTF8 can be from 1 to 4 bytes long, subjected to the following rules:
+# Challenge :
+    Write a method that determines if a given data set represents a valid UTF-8 encoding.
 
-For 1-byte character, the first bit is a 0, followed by its unicode code.
+    - Prototype: def validUTF8(data)
+    - Return: True if data is a valid UTF-8 encoding, else return False
+    - A character in UTF-8 can be 1 to 4 bytes long
+    - The data set can contain multiple characters
+    - The data will be represented by a list of integers
+    - Each integer represents 1 byte of data, therefore you only need to - handle the 8 least significant bits of each integer
 
-For n-bytes character, the first n-bits are all one's, the n+1 bit is 0, followed by n-1 bytes with most significant 2 bits being 10.
+## Example :
+    carrie@ubuntu:~/0x04-utf8_validation$ cat 0-main.py
+    #!/usr/bin/python3
+    """
+    Main file for testing
+    """
 
-This is how the UTF-8 encoding would work:
+    validUTF8 = __import__('0-validate_utf8').validUTF8
 
-Char. number range  |        UTF-8 octet sequence
-      (hexadecimal)    |              (binary)
-   --------------------+---------------------------------------------
-   0000 0000-0000 007F | 0xxxxxxx
-   0000 0080-0000 07FF | 110xxxxx 10xxxxxx
-   0000 0800-0000 FFFF | 1110xxxx 10xxxxxx 10xxxxxx
-   0001 0000-0010 FFFF | 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+    data = [65]
+    print(validUTF8(data))
 
-Given an array of integers representing the data, return whether it is a valid utf-8 encoding.
+    data = [80, 121, 116, 104, 111, 110, 32, 105, 115, 32, 99, 111, 111, 108, 33]
+    print(validUTF8(data))
 
-      def validUTF8(data):
+    data = [229, 65, 127, 256]
+    print(validUTF8(data))
 
-Note: The input is an array of integers. Only the least significant 8 bits of each integer is used to store the data. This means each integer represents only 1 byte of data.
+    carrie@ubuntu:~/0x04-utf8_validation$
+    carrie@ubuntu:~/0x04-utf8_validation$ ./0-main.py
+    True
+    True
+    False
+    carrie@ubuntu:~/0x04-utf8_validation$
 
-Example 1:
-
-data = [197, 130, 1], which represents the octet sequence: 11000101
-  10000010 00000001.
-
-Return true. It is a valid utf-8 encoding for a 2-bytes character followed by a 1-byte character.
-
-Example 2:
-
-data = [235, 140, 4], which represented the octet sequence: 11101011 10001100 00000100.
-
-Return false. The first 3 bits are all one's and the 4th bit is 0 means it is a 3-bytes character. The next byte is a continuation byte which starts with 10 and that's correct. But the second continuation byte does not start with 10, so it is invalid.
+## Resources
+- [UTF-8 wikipedia page](https://en.wikipedia.org/wiki/UTF-8)
+- [youtube](https://www.youtube.com/watch?v=MijmeoH9LT4)
