@@ -1,79 +1,77 @@
 #!/usr/bin/python3
-"""
-Define island_perimeter function that finds the perimeter
-of an island in a body of water
-"""
-
-bound_4 = set()
-bound_3 = set()
-bound_2 = set()
-bound_1 = set()
-
-
-def boundary(grid, i, j):
-    """Find cells with either 4, 3, 2 or 1 exposed boundary and add them to
-       appropriate set
-       Args:
-           grid (list): 2d list
-           i (int): row number
-           j (int): column number
-    """
-    boundaries = 0
-    try:
-        if i == 0:
-            boundaries += 1
-        elif grid[i-1][j] == 0:
-            boundaries += 1
-    except:
-        boundaries += 1
-    try:
-        if grid[i+1][j] == 0:
-            boundaries += 1
-    except:
-        boundaries += 1
-    try:
-        if grid[i][j+1] == 0:
-            boundaries += 1
-    except:
-        boundaries += 1
-    try:
-        if j == 0:
-            boundaries += 1
-        elif grid[i][j-1] == 0:
-            boundaries += 1
-    except:
-        boundaries += 1
-
-    if boundaries == 1:
-        bound_1.add((i, j))
-    elif boundaries == 2:
-        bound_2.add((i, j))
-    elif boundaries == 3:
-        bound_3.add((i, j))
-    elif boundaries == 4:
-        bound_4.add((i, j))
+""" This is a bad way to get island perimeter """
 
 
 def island_perimeter(grid):
-    """
-    Calculate and return perimeter of island in the grid
-    Grid is a rectangular grid where 0s represent water and 1s represent land
-    Each cell is a square with a side length of 1
-    There is only one island
-    Args:
-        grid [list] : 2d list of ints either 0 or 1
-    Return:
-       perimeter of island
-    """
-    if grid == []:
-        return 0
-    l = len(grid)
-    w = len(grid[0])
-    for i in range(l):
-        for j in range(w):
-            if grid[i][j] == 1:
-                boundary(grid, i, j)
-                if len(bound_4) != 0:
-                    return 4
-    perimeter = (len(bound_3) * 3) + (len(bound_2) * 2) + (len(bound_1))
-    return perimeter
+    """ Islands perimeter and i am ashamed"""
+    sum = 0
+    for i in range(len(grid)):
+        for x in range(len(grid[i])):
+            if grid[i][x] == 1 and (i < (len(grid) - 1) and i > 0):
+                fb_ver2 = (grid[i + 1][x] != 1 or grid[i - 1][x] != 1)
+                fb_ver_n = (grid[i + 1][x] != 1 and grid[i - 1][x] != 1)
+                fb_ver = (grid[i + 1][x] == 1 and grid[i - 1][x] == 1)
+                sum += total(grid, i, x, fb_ver, fb_ver2, fb_ver_n)
+            elif grid[i][x] == 1 and (i == (len(grid) - 1)):
+                fb_ver2 = (grid[i - 1][x] != 1 or True)
+                fb_ver_n = (grid[i - 1][x] != 1 and True)
+                fb_ver = (grid[i - 1][x] == 1 and False)
+                sum += total(grid, i, x, fb_ver, fb_ver2, fb_ver_n)
+            elif grid[i][x] == 1 and (i == 0):
+                fb_ver2 = (True or grid[i + 1][x] != 1)
+                fb_ver_n = (True and grid[i + 1][x] != 1)
+                fb_ver = (False and grid[i + 1][x] == 1)
+                sum += total(grid, i, x, fb_ver, fb_ver2, fb_ver_n)
+    return sum
+
+
+def total(grid, i, x, fb_ver, fb_ver2, fb_ver_n):
+    """ get total perimeter now """
+    sum = 0
+    if x == 0 and grid[i][x] == 1:
+        if fb_ver2 and (not fb_ver_n) and grid[i][x + 1] != 1:
+            sum += 3
+        elif fb_ver_n and grid[i][x + 1] != 1:
+            sum += 4
+        elif fb_ver_n and grid[i][x + 1] == 1:
+            sum += 3
+        elif fb_ver2 and (not fb_ver_n) and grid[i][x + 1] == 1:
+            sum += 2
+        elif fb_ver and grid[i][x + 1] != 1:
+            sum += 2
+        elif fb_ver and grid[i][x + 1] == 1:
+            sum += 1
+    elif (x != len(grid[i]) - 1) and grid[i][x] == 1:
+        fb_hor = (grid[i][x + 1] == 1 and grid[i][x - 1] == 1)
+        fb_hor_n = (grid[i][x + 1] != 1 and grid[i][x - 1] != 1)
+        fb_hor2 = (grid[i][x + 1] != 1 or grid[i][x - 1] != 1)
+        if (fb_hor2 and (not fb_hor_n)) and (fb_ver2 and (not fb_ver_n)):
+            sum += 2
+        elif (fb_hor2 and (not fb_hor_n)) and fb_ver_n:
+            sum += 3
+        elif (fb_hor2 and (not fb_hor_n)) and fb_ver:
+            sum += 1
+        elif fb_hor and fb_ver_n:
+            sum += 2
+        elif fb_hor and (fb_ver2 and (not fb_ver_n)):
+            sum += 1
+        elif fb_hor_n and fb_ver_n:
+            sum += 4
+        elif fb_hor_n and fb_ver:
+            sum += 2
+        elif fb_hor_n and (fb_ver2 and (not fb_ver_n)):
+            sum += 3
+    elif grid[i][x] == 1:
+        if fb_ver2 and (not fb_ver_n) and grid[i][x - 1] != 1:
+            sum += 3
+        elif fb_ver2 and (not fb_ver_n) and grid[i][x - 1] == 1:
+            sum += 2
+        elif fb_ver_n and grid[i][x - 1] != 1:
+            sum += 4
+        elif fb_ver_n and grid[i][x - 1] == 1:
+            sum += 3
+        elif fb_ver and grid[i][x - 1] != 1:
+            sum += 2
+        elif fb_ver and grid[i][x - 1] == 1:
+            sum += 1
+    return sum
